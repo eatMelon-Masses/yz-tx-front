@@ -1,0 +1,44 @@
+name: node CI
+
+
+on: [ workflow_dispatch ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      - name: Build with dockerfile
+        run:  docker build -t yz-tx:0.1 .
+      - name: Login to Aliyun Container Registry (ACR)
+        uses: aliyun/acr-login@v1
+        with:
+          login-server: https://registry.cn-chengdu.aliyuncs.com
+          region-id: cn-chengdu  # 3
+          username: "${{ secrets.ACR_USERNAME }}"
+          password: "${{ secrets.ACR_PASSWORD }}"
+      - name: tag with run id
+        run: docker tag docker.io/yiezi/yz-tx-front:latest  registry.cn-chengdu.aliyuncs.com/yiezi/yz-tx-front:${{ github.run_id }}
+      - name: push
+        run: docker push registry.cn-chengdu.aliyuncs.com/yiezi/yz-tx-front:${{ github.run_id }}
+      - name: change permissions
+        run: chmod +x k8s/api/replace.sh
+      - name: replace tag
+        run: k8s/api/replace.sh API_TAG ${{ github.run_id }}
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+        id: extract_branch
+      - name: deploy to cluster
+        if: steps.extract_branch.outputs.branch == 'master'
+        uses: steebchen/kubectl@v2.0.0
+        with: # defaults to latest kubectl binary version
+          config: ${{ secrets.KUBE_CONFIG_DATA }}
+          command: apply -f k8s/api/deployment.yaml
