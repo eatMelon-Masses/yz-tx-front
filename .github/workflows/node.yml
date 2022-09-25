@@ -17,7 +17,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build with dockerfile
-        run:  ls ./ && docker build -t yz-tx:0.1 .
+        run:  ls ./ && docker build -t yz-tx-front:latest .
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1
         with:
