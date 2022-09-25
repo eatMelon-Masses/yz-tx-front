@@ -1,4 +1,4 @@
-ename: node CI
+name: node CI
 
 
 on: [ workflow_dispatch ]
