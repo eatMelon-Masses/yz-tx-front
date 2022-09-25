@@ -16,12 +16,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
       - name: Build with dockerfile
-        run:  docker build -t yz-tx:0.1 .
+        run:  docker build -t yz-tx:0.1 ../
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1
         with:
           login-server: https://registry.cn-chengdu.aliyuncs.com
-          region-id: cn-chengdu  # 3
+          region-id: cn-chengdu  
           username: "${{ secrets.ACR_USERNAME }}"
           password: "${{ secrets.ACR_PASSWORD }}"
       - name: tag with run id
@@ -37,7 +37,7 @@ jobs:
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
         id: extract_branch
       - name: deploy to cluster
-        if: steps.extract_branch.outputs.branch == 'master'
+        if: steps.extract_branch.outputs.branch == 'main'
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
           config: ${{ secrets.KUBE_CONFIG_DATA }}
