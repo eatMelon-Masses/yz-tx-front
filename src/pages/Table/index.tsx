@@ -7,12 +7,12 @@ import {
   ProDescriptionsItemProps,
   ProTable,
 } from '@ant-design/pro-components';
-import { Button, Divider, Drawer, message } from 'antd';
+import { Button, Divider, Drawer, message, Tag, Space } from 'antd';
 import React, { useRef, useState } from 'react';
 import CreateForm from './components/CreateForm';
 import UpdateForm, { FormValueType } from './components/UpdateForm';
 
-const { addUser, queryUserList, deleteUser, modifyUser } =
+const { addUser, queryUserList, deleteUser, modifyUser, queryInstanceList} =
   services.UserController;
 
 /**
@@ -102,35 +102,44 @@ const TableList: React.FC<unknown> = () => {
     useState<boolean>(false);
   const [stepFormValues, setStepFormValues] = useState({});
   const actionRef = useRef<ActionType>();
-  const [row, setRow] = useState<API.UserInfo>();
-  const [selectedRowsState, setSelectedRows] = useState<API.UserInfo[]>([]);
-  const columns: ProDescriptionsItemProps<API.UserInfo>[] = [
+  const [row, setRow] = useState<API.Instance>();
+  const [selectedRowsState, setSelectedRows] = useState<API.Instance[]>([]);
+  const columns: ProDescriptionsItemProps<API.Instance>[] = [
     {
-      title: '名称',
-      dataIndex: 'name',
+      title: '实例id',
+      dataIndex: 'instanceId',
       tip: '名称是唯一的 key',
       formItemProps: {
         rules: [
           {
-            required: true,
+            required: false,
             message: '名称为必填项',
           },
         ],
       },
     },
     {
-      title: '昵称',
-      dataIndex: 'nickName',
+      title: '实例名称',
+      dataIndex: 'instanceName',
       valueType: 'text',
     },
     {
-      title: '性别',
-      dataIndex: 'gender',
-      hideInForm: true,
-      valueEnum: {
-        0: { text: '男', status: 'MALE' },
-        1: { text: '女', status: 'FEMALE' },
+      disable: true,
+      title: '公网地址',
+      dataIndex: 'publicAddresses',
+      search: false,
+      renderFormItem: (_, { defaultRender }) => {
+        return defaultRender(_);
       },
+      render: (_, record) => (
+        <Space>
+          {record.publicAddresses.map(address => (
+            <Tag  key={address}>
+              {address}
+            </Tag>
+          ))}
+       </Space>
+      ),
     },
     {
       title: '操作',
@@ -159,7 +168,7 @@ const TableList: React.FC<unknown> = () => {
         title: 'CRUD 示例',
       }}
     >
-      <ProTable<API.UserInfo>
+      <ProTable<API.Instance>
         headerTitle="查询表格"
         actionRef={actionRef}
         rowKey="id"
@@ -176,7 +185,7 @@ const TableList: React.FC<unknown> = () => {
           </Button>,
         ]}
         request={async (params, sorter, filter) => {
-          const { data, success } = await queryUserList({
+          const { data, success } = await queryInstanceList({
             ...params,
             // FIXME: remove @ts-ignore
             // @ts-ignore
@@ -184,7 +193,7 @@ const TableList: React.FC<unknown> = () => {
             filter,
           });
           return {
-            data: data?.list || [],
+            data: data,
             success,
           };
         }}
@@ -211,12 +220,6 @@ const TableList: React.FC<unknown> = () => {
             }}
           >
             批量删除
-          </Button>
-          <Button
-          onClick={()=>{
-            handleInstanceList();  
-          }}>
-            测试
           </Button>
           <Button type="primary">批量审批</Button>
         </FooterToolbar>

@@ -97,16 +97,16 @@ export async function deleteUser(
 
 
 /** 此处后端没有提供注释 GET /api/v1/queryInstanceList */
-// export async function queryInstanceList(
-//   params: {
-//   },
-//   options?: { [key: string]: any },
-// ) {
-//   return request<API.Result_PageInfo_UserInfo__>('/instances', {
-//     method: 'GET',
-//     params: {
-//       ...params,
-//     },
-//     ...(options || {}),
-//   });
-// }
+ export async function queryInstanceList(
+   params: {
+   },
+   options?: { [key: string]: any },
+ ) {
+   return request<API.Result_InstanceInfo_>('/api/instances', {
+     method: 'GET',
+     params: {
+       ...params,
+     },
+     ...(options || {}),
+   });
+ }

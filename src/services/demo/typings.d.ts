@@ -63,6 +63,19 @@ declare namespace API {
     /** email */
     email?: string;
   }
-
+  interface Result_InstanceInfo_ {
+    success?: boolean;
+    errorMessage?: string;
+    data?: Array<Instance>;
+  }
+  interface Instance {
+    instanceId?: string;
+    instanceName?: string;
+    /** nick */
+    publicAddresses:string[];
+    /** email */
+    zone?: string;
+    instanceRestrictState?: string;
+  }
   type definitions_0 = null;
 }
