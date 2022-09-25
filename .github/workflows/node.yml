@@ -16,8 +16,13 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+      - name: Caching node modules
+        uses: actions/cache@v2
+        with:
+          path: "node_modules"
+          key: node-modules-${{ hashFiles('package.json') }}
       - name: Build with dockerfile
-        run:  ls ./ && docker build -t yz-tx-front:latest .
+        run:  ls ./ && docker build -t yiezi/yz-tx-front:latest .
       - name: Login to Aliyun Container Registry (ACR)
         uses: aliyun/acr-login@v1
         with:
