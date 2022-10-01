@@ -3,7 +3,7 @@ export default defineConfig({
   proxy:{
     
       '/api': {
-        'target': 'http://hk.yiezi.ml:32247/',
+        'target': 'http://42.193.136.125:32247/',
         'changeOrigin': true,
         'pathRewrite': { '^/api' : '/' },
         // headers:{'host': '127.0.0.1'}
